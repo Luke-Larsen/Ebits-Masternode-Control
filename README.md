@@ -14,5 +14,5 @@ A simple web based command and control server for ebit masternodes
         -  If you use 0.0.0.0/0 any ip can connect into your box
         - Also important to node some instulations have a port of 99901 change this to a lower number or you will get errors
 - Now upload the files included in this github to your webserver
-- Edit the index.php file with your Masternode information
+- Edit the config.php file (under the php folder) with your Masternode information
 - Congrats your done!

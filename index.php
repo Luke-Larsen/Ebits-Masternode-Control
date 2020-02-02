@@ -3,22 +3,25 @@ session_start();
 require_once ('Php/easyEbits.php');
 require_once ('Php/config.php');
 require_once ('Php/API.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
   for($x = 0; $x <= $VPSMasterNodes-1; $x++){
     ${"Ebits" . $x} = new Ebits("${"MNUser" . $x}","${"MNPassword" . $x}","${"MNHost" . $x}","${"MNPort" . $x}");
     ${"BlockCount" . $x} = ${"Ebits" . $x}->getblockcount();
     ${"UpTime" . $x}= ${"Ebits" . $x}->uptime();
+    ${"ConnectedEnabledMasternodes" . $x}= ${"Ebits" . $x}->masternode('count', 'enabled');
   }
 }
 
 if(isset($_POST['stop'])){
   if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
     for($x = 0; $x <= $VPSMasterNodes-1; $x++){
-      ${"Ebits" . $x} = new Ebits("${"MNUser" . $x}","${"MNPassword" . $x}","${"MNHost" . $x}","${"MNPort" . $x}");
       ${"Ebits" . $x}->stop();
-      echo("<script>location.href = 'index.php';</script>");
     }
+    echo("<script>location.href = 'index.php';</script>");
   }
 }
 if(isset($_POST['Logout'])){
@@ -35,11 +38,55 @@ if(isset($_POST['enter'])){
     header('location:404.php');
   }
 }
+if(isset($_POST['AddPeer'])){
+  $peer = $_POST['peer'];
+  if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
+    for($x = 0; $x <= $VPSMasterNodes-1; $x++){
+      ${"Ebits" . $x}->setban($peer . '/32','remove');
+    }
+    echo("<script>location.href = 'index.php';</script>");
+  }
+}
+if(isset($_POST['Addnode'])){
+  $peer = $_POST['peer'];
+  if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
+    for($x = 0; $x <= $VPSMasterNodes-1; $x++){
+      ${"Ebits" . $x}->addnode($peer,'add');
+    }
+    echo("<script>location.href = 'index.php';</script>");
+  }
+}
+if(isset($_POST['RemoveNode'])){
+  $peer = $_POST['peer'];
+  if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
+    for($x = 0; $x <= $VPSMasterNodes-1; $x++){
+      ${"Ebits" . $x}->addnode($peer,'remove');
+    }
+    echo("<script>location.href = 'index.php';</script>");
+  }
+}
+if(isset($_POST['DelPeer'])){
+  $peer = $_POST['peer'];
+  if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
+    for($x = 0; $x <= $VPSMasterNodes-1; $x++){
+      ${"Ebits" . $x}->setban($peer . '/32','add');
+    }
+    echo("<script>location.href = 'index.php';</script>");
+  }
+}
+if(isset($_POST['unBanAll'])){
+  if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
+    for($x = 0; $x <= $VPSMasterNodes-1; $x++){
+      ${"Ebits" . $x}->clearbanned();
+    }
+    echo("<script>location.href = 'index.php';</script>");
+  }
+}
 if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
 ?>
 <html>
   <head>
-    <title>Ebits</title>
+    <title>Ebits Masternode Control</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -77,18 +124,20 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
           $BlockCount = ${"BlockCount" . $x};
           $UpTime = ${"UpTime" . $x};
           $MNName = ${"MNName" . $x};
-          if($BlockCount == $response){
-            echo "<center> Masternode $MNName at blockcount:$BlockCount upTime:$UpTime secounds</center>";
+          $MNCP = ${"ConnectedEnabledMasternodes" . $x};
+          if($BlockCount >= $response){
+            echo "<center> Masternode $MNName at blockcount:$BlockCount upTime:$UpTime secounds ConnectedToEnabled: $MNCP Peers</center>";
           }else{
-            echo "<center style='color:red;'> Masternode $MNName out of sync blockcount:$BlockCount upTime:$UpTime secounds</center>";
+            echo "<center style='color:red;'> Masternode $MNName out of sync blockcount:$BlockCount upTime:$UpTime secounds ConnectedToEnabled: $MNCP Peers</center>";
           }
         }else{
+          $MNName = ${"MNName" . $x};
           echo "<center> Masternode $MNName is offline </center>";
         }
       }
      ?>
    </div>
-    <div class='row bg-gray'>
+    <div class='row'>
       <div class='col-lg-4'>
         <center>
           <form>
@@ -107,6 +156,56 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
         <center>
           <form action="" method="post">
             <input type="submit" class="btn btn-danger" style='display: inline;' name="stop" value="Stop All Masternodes" placeholder="Stop All Masternodes">
+          </form>
+        </center>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="submit" class="btn btn-danger" style='display: inline;' name="unBanAll" value="unBanAll" placeholder="UnBan All Peers">
+          </form>
+        </center>
+      </div>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
+            <input type="submit" class="btn btn-warning" style='display: inline;' name="AddPeer" value="UNBAN Peer" placeholder="UNBAN Peer">
+          </form>
+        </center>
+      </div>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
+            <input type="submit" class="btn btn-danger" style='display: inline;' name="DelPeer" value="BAN Peer" placeholder="BAN Peer">
+          </form>
+        </center>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="submit" class="btn btn-danger" style='display: inline;' name="unBanAll" value="unBanAll" placeholder="UnBan All Peers">
+          </form>
+        </center>
+      </div>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
+            <input type="submit" class="btn btn-warning" style='display: inline;' name="Addnode" value="Add Node" placeholder="Add Node">
+          </form>
+        </center>
+      </div>
+      <div class='col-lg-4'>
+        <center>
+          <form action="" method="post">
+            <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
+            <input type="submit" class="btn btn-danger" style='display: inline;' name="RemoveNode" value="Remove Node" placeholder="Remove Node">
           </form>
         </center>
       </div>
@@ -147,25 +246,6 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
             </div>
         </div>
     </nav>
-    <div style='margin-top:60px;'>
-    <?php
-      if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $ControlPassword){
-        for($x = 0; $x <= $VPSMasterNodes-1; $x++){
-          if(${"BlockCount" . $x} != NULL){
-            $BlockCount = ${"BlockCount" . $x};
-            $UpTime = ${"UpTime" . $x};
-            if($BlockCount == $response){
-              echo "<center> Masternode ${"MNName" . $x} at blockcount:$BlockCount upTime:$UpTime secounds</center>";
-            }else{
-              echo "<center style='color:red;'> Masternode ${"MNName" . $x} out of sync blockcount:$BlockCount upTime:$UpTime secounds</center>";
-            }
-          }else{
-            echo "<center> Masternode $x is offline </center>";
-          }
-        }
-      }
-     ?>
-   </div>
     <div class='row bg-gray'>
       <div class='col-lg-12'>
         <center>
