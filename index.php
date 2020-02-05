@@ -126,9 +126,9 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
           $MNName = ${"MNName" . $x};
           $MNCP = ${"ConnectedEnabledMasternodes" . $x};
           if($BlockCount >= $response){
-            echo "<center> Masternode $MNName at blockcount:$BlockCount upTime:$UpTime secounds ConnectedToEnabled: $MNCP Peers</center>";
+            echo "<center> Masternode $MNName at blockcount:$BlockCount upTime:$UpTime seconds ConnectedToEnabled: $MNCP Peers</center>";
           }else{
-            echo "<center style='color:red;'> Masternode $MNName out of sync blockcount:$BlockCount upTime:$UpTime secounds ConnectedToEnabled: $MNCP Peers</center>";
+            echo "<center style='color:red;'> Masternode $MNName out of sync blockcount:$BlockCount upTime:$UpTime seconds ConnectedToEnabled: $MNCP Peers</center>";
           }
         }else{
           $MNName = ${"MNName" . $x};
@@ -140,10 +140,10 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
     <div class='row'>
       <div class='col-lg-4'>
         <center>
-          <form>
-            <input type="submit" class="btn btn-secondary"  style='display: inline;' name="refresh" value="refresh" onClick="window.location.reload();" placeholder="refresh Masternodes blockcount">
+          <form action="" method="post">
+            <input type="submit" class="btn btn-danger" style='display: inline;' name="unBanAll" value="unBanAll" placeholder="UnBan All Peers">
           </form>
-      </center>
+        </center>
       </div>
       <div class='col-lg-4'>
         <center>
@@ -161,14 +161,7 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
       </div>
     </div>
     <div class='row'>
-      <div class='col-lg-4'>
-        <center>
-          <form action="" method="post">
-            <input type="submit" class="btn btn-danger" style='display: inline;' name="unBanAll" value="unBanAll" placeholder="UnBan All Peers">
-          </form>
-        </center>
-      </div>
-      <div class='col-lg-4'>
+      <div class='col-lg-6'>
         <center>
           <form action="" method="post">
             <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
@@ -176,7 +169,7 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
           </form>
         </center>
       </div>
-      <div class='col-lg-4'>
+      <div class='col-lg-6'>
         <center>
           <form action="" method="post">
             <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
@@ -186,14 +179,7 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
       </div>
     </div>
     <div class='row'>
-      <div class='col-lg-4'>
-        <center>
-          <form action="" method="post">
-            <input type="submit" class="btn btn-danger" style='display: inline;' name="unBanAll" value="unBanAll" placeholder="UnBan All Peers">
-          </form>
-        </center>
-      </div>
-      <div class='col-lg-4'>
+      <div class='col-lg-6'>
         <center>
           <form action="" method="post">
             <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
@@ -201,7 +187,7 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
           </form>
         </center>
       </div>
-      <div class='col-lg-4'>
+      <div class='col-lg-6'>
         <center>
           <form action="" method="post">
             <input type="text" name='peer' class="form-control" size="50" placeholder="peer" required>
@@ -229,31 +215,37 @@ if(isset($_SESSION['MasternodeControl'])&& $_SESSION['MasternodeControl'] == $Co
     <link rel="image_src" href="img/ebits.png" />
   <head>
   <body>
-    <nav id='navbarLinks' class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.php"><img src="https://ebitscrypto.com/Images/ebits.png" alt="Ebits" style='height:100%; display:inline-block;'/> Ebits</a>
+    <div>
+      <div style='padding: 0;'>
+        <nav id='navbarLinks' class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.php"><img src="https://ebitscrypto.com/Images/ebits.png" alt="Ebits" style='height:100%; display:inline-block;'/> Ebits</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Difficulty PoW: <?php echo $responseDifficulty['proof-of-work']?></a></li>
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Difficulty PoS: <?php echo $responseDifficulty['proof-of-stake']?></a></li>
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Connections: <?php echo $responseConnections?></a></li>
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Hashrate: <?php echo $responseHashRate?></a></li>
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Block: <?php echo $response?></a></li>
+                        <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>EXPLORER</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Difficulty PoW: <?php echo $responseDifficulty['proof-of-work']?></a></li>
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Difficulty PoS: <?php echo $responseDifficulty['proof-of-stake']?></a></li>
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Connections: <?php echo $responseConnections?></a></li>
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Hashrate: <?php echo $responseHashRate?></a></li>
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>Block: <?php echo $response?></a></li>
-                    <li><a href="http://blockexplorer.ebitscrypto.com/" target='_blank'>EXPLORER</a></li>
-                </ul>
-            </div>
+        </nav>
+      </div>
+      <div style='margin-top:60px;'>
+        <div class='row' style='top:60px;'>
+          <div class='col-lg-12'>
+            <center>
+              <form action="" method="post">
+                <input type="password" name='password' class="form-control" size="50" placeholder="password" required>
+                <input type="submit" class="btn btn-danger" style='display: inline;' name="enter" value="Enter" placeholder="Enter">
+              </form>
+            </center>
+          </div>
         </div>
-    </nav>
-    <div class='row bg-gray'>
-      <div class='col-lg-12'>
-        <center>
-          <form action="" method="post">
-            <input type="password" name='password' class="form-control" size="50" placeholder="password" required>
-            <input type="submit" class="btn btn-danger" style='display: inline;' name="enter" value="Enter" placeholder="Enter">
-          </form>
-        </center>
       </div>
     </div>
   </body>
